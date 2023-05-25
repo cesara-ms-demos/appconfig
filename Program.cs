@@ -13,9 +13,7 @@ string connectionString = builder.Configuration.GetConnectionString("AppConfig")
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
     options.Connect(connectionString)
-           // Load all keys that start with `TestApp:` and have no label
            .Select("TestApp:*", LabelFilter.Null)
-           // Configure to reload configuration if the registered sentinel key is modified
            .ConfigureKeyVault(kv =>
            {
                 kv.SetCredential(new DefaultAzureCredential());
@@ -40,11 +38,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddAzureAppConfiguration();
 
 // Add feature management to the container of services.
-builder.Services.AddFeatureManagement();
-//builder.Services.AddFeatureManagement().AddFeatureFilter<Microsoft.FeatureManagement.FeatureFilters.PercentageFilter>();
+builder.Services.AddFeatureManagement().AddFeatureFilter<Microsoft.FeatureManagement.FeatureFilters.PercentageFilter>();
 
 // Bind configuration "TestApp:Settings" section to the Settings object
-//builder.Services.Configure<Settings>(builder.Configuration.GetSection("TestApp:Settings"));
+builder.Services.Configure<Settings>(builder.Configuration.GetSection("TestApp:Settings"));
 
 var app = builder.Build();
 
